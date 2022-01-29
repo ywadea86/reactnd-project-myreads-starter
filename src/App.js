@@ -25,7 +25,7 @@ const BooksApp = () => {
       }, 1000);
       return () => clearTimeout(timeoutId);
     }
-  }, [searchUserInput.slug]);
+  }, [searchUserInput]);
   const [allBook, setAllBook] = useState([{}]);
   useEffect(() => {
     BooksAPI.getAll().then((data) => setAllBook(data));
@@ -37,7 +37,6 @@ const BooksApp = () => {
   // }
   //const shelfsType=["Currently Reading","Want to Read","Read"]
   const [state, setState] = useState({ showSearchPage: false });
-  //console.log(searchUserInput.res);
   return (
     <div className="app">
       {state.showSearchPage ? (
