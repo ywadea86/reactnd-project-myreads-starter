@@ -5,38 +5,34 @@ import BookShelf from "./components/bookShelf";
 import Books from "./components/books";
 
 const BooksApp = () => {
-  //shelfsType=[]
   const [searchUserInput, setSearchUserInput] = useState({
     slug: "",
     books: [],
   });
   useEffect(() => {
+    //console.log(searchUserInput.res.error);
     if (searchUserInput.slug !== "") {
       const timeoutId = setTimeout(() => {
         const fetch = async () => {
           try {
             const res = await BooksAPI.search(`${searchUserInput.slug}`);
-            setSearchUserInput({ ...searchUserInput,  res });
+            setSearchUserInput({ ...searchUserInput, res });
           } catch (err) {
             console.error(err);
           }
         };
         fetch();
       }, 1000);
+
       return () => clearTimeout(timeoutId);
     }
   }, [searchUserInput]);
   const [allBook, setAllBook] = useState([{}]);
   useEffect(() => {
     BooksAPI.getAll().then((data) => setAllBook(data));
-    // console.log(allBook)
   }, []);
-  // const handleShelf=(book,shelf)=>{
-  //   console.log("read");
-  //   console.log(BooksAPI.update(book,shelf));
-  // }
-  //const shelfsType=["Currently Reading","Want to Read","Read"]
   const [state, setState] = useState({ showSearchPage: false });
+  //console.log(searchUserInput);
   return (
     <div className="app">
       {state.showSearchPage ? (
@@ -64,18 +60,18 @@ const BooksApp = () => {
           </div>
           <div className="search-books-results">
             <ol className="books-grid">
-{searchUserInput.res &&
-  <>
- { searchUserInput.res.map((books)=>
+              {searchUserInput.res && (
+                <>
+                  {searchUserInput.res.map &&
+                    searchUserInput.res.map((books) => (
+                      <>
+                        {" "}
 
-        <Books key={books.id} books={books}/>)
- }
-        </>
-
-
-
-
-}
+                        <Books key={books.id} books={books} />
+                      </>
+                    ))}
+                </>
+              )}
             </ol>
           </div>
         </div>
