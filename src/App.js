@@ -9,24 +9,23 @@ const BooksApp = () => {
   useEffect(() => {
     BooksAPI.getAll().then((data) => setAllBook(data));
   }, []);
-  const [searchUserInput, setSearchUserInput] = useState({
-    slug: "",
-    books: [],
-  });
+  const [searchUserInput, setSearchUserInput] = useState({slug: ""});
+
   useEffect(() => {
-    if (searchUserInput.slug !== "") {
+   // if (searchUserInput.slug !== "") {
       const timeoutId = setTimeout(() => {
         const fetch = async () => {
           try {
             let res = await BooksAPI.search(`${searchUserInput.slug}`);
-            if(res.hasOwnProperty("error")){
+            //console.log(searchUserInput.slug)
+            if(searchUserInput.slug === ""){
               res=[];
             setSearchUserInput({ ...searchUserInput, res });
           }else{
-            const filterData = res.map((data)=>data.id)
-            const  filterbook = allBook.filter(data=>filterData.includes(data.id))
-            const filterBookID = filterbook.map((data)=>data.id)
-           res= filterbook.concat(res.filter((data) => !filterBookID.includes(data.id)));
+            const filterData = res.map((data)=>data.id);
+            const filterbook = allBook.filter(data=>filterData.includes(data.id));
+            const filterBookID = filterbook.map((data)=>data.id);
+                            res = filterbook.concat(res.filter((data) => !filterBookID.includes(data.id)));
             setSearchUserInput({ ...searchUserInput, res });
 
           }
@@ -37,7 +36,7 @@ const BooksApp = () => {
         fetch();
       }, 1000);
       return () => clearTimeout(timeoutId);
-    }
+
   }, [allBook, searchUserInput, searchUserInput.res]);
 
   const [state, setState] = useState({ showSearchPage: false });
