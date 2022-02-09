@@ -5,32 +5,41 @@ import BookShelf from "./components/bookShelf";
 import Books from "./components/books";
 
 const BooksApp = () => {
+  const [allBook, setAllBook] = useState([{}]);
+  useEffect(() => {
+    BooksAPI.getAll().then((data) => setAllBook(data));
+  }, []);
   const [searchUserInput, setSearchUserInput] = useState({
     slug: "",
     books: [],
   });
   useEffect(() => {
-    //console.log(searchUserInput.res.error);
     if (searchUserInput.slug !== "") {
       const timeoutId = setTimeout(() => {
         const fetch = async () => {
           try {
-            const res = await BooksAPI.search(`${searchUserInput.slug}`);
+            let res = await BooksAPI.search(`${searchUserInput.slug}`);
+            if(res.hasOwnProperty("error")){
+              res=[];
             setSearchUserInput({ ...searchUserInput, res });
+          }else{
+            const filterData = res.map((data)=>data.id)
+            const  filterbook = allBook.filter(data=>filterData.includes(data.id))
+            const filterBookID = filterbook.map((data)=>data.id)
+           res= filterbook.concat(res.filter((data) => !filterBookID.includes(data.id)));
+            setSearchUserInput({ ...searchUserInput, res });
+
+          }
           } catch (err) {
             console.error(err);
           }
         };
         fetch();
       }, 1000);
-
       return () => clearTimeout(timeoutId);
     }
-  }, [searchUserInput]);
-  const [allBook, setAllBook] = useState([{}]);
-  useEffect(() => {
-    BooksAPI.getAll().then((data) => setAllBook(data));
-  }, []);
+  }, [allBook, searchUserInput, searchUserInput.res]);
+
   const [state, setState] = useState({ showSearchPage: false });
   //console.log(searchUserInput);
   return (
@@ -60,18 +69,10 @@ const BooksApp = () => {
           </div>
           <div className="search-books-results">
             <ol className="books-grid">
-              {searchUserInput.res && (
-                <>
-                  {searchUserInput.res.map &&
+                  {searchUserInput.hasOwnProperty("res")  &&
                     searchUserInput.res.map((books) => (
-                      <>
-                        {" "}
-
                         <Books key={books.id} books={books} />
-                      </>
                     ))}
-                </>
-              )}
             </ol>
           </div>
         </div>
